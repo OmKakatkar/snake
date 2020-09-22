@@ -1,23 +1,27 @@
 import pygame
 import random
 import os
+import sys
 
 pygame.init()
+pygame.font.init()
+
 screen_width = 450
 screen_height = 400
 
 # Window creation
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Snake")
-# pygame.display.set_icon()
+icon = pygame.image.load("data/images/snake.png")
+pygame.display.set_icon(icon)
 
 # Start the clock
 clock = pygame.time.Clock()
 
 # Font Styles
-font_large = pygame.font.SysFont(None, 55)
-font_normal = pygame.font.SysFont(None, 40)
-font_small = pygame.font.SysFont(None, 32)
+font_large = pygame.font.SysFont('comicsansms', 45)
+font_normal = pygame.font.SysFont('comicsansms', 30)
+font_small = pygame.font.SysFont('comicsansms', 22)
 
 # Colors
 white = (255, 255, 255)
@@ -57,7 +61,7 @@ def game_loop():
     score_bar_y_pos = 50
     if(not os.path.exists("high_score.txt")):
         with open("high_score.txt", 'w') as f:
-            f.write("0")    
+            f.write("0")
     with open("high_score.txt", 'r') as f:
         high_score = int(f.read())
 
@@ -84,9 +88,9 @@ def game_loop():
         # Home Screen
         if game_state == "Home":
             screen.fill(white)
-            text_write("Welcome to Snakes", red, 45, 80, font_large)
-            text_write("Press Enter", red, 120, 160, font_large)
-            text_write("To Start", red, 145, 240, font_large)
+            text_write("Welcome to Snakes", red, 20, 80, font_large)
+            text_write("Press Enter", red, 100, 160, font_large)
+            text_write("To Start", red, 120, 240, font_large)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -159,9 +163,9 @@ def game_loop():
 
             # Print Score on screen
             text_write("Score : " + str(score), green,
-                       5, 10)
+                       5, 5)
             text_write("   High Score : " + str(high_score), green,
-                       180, 10)
+                       180, 5)
 
             # Snake's current position
             snake_head = []
@@ -202,7 +206,7 @@ def game_loop():
         clock.tick(fps)
 
     pygame.quit()
-    quit()
+    sys.exit()
 
 
 game_loop()
