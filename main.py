@@ -7,6 +7,15 @@ import sys
 from pygame.locals import *
 import pygame
 
+# Music
+pygame.mixer.pre_init(44100, 16, 2, 4096)
+pygame.mixer.init()
+BGM_MAIN = pygame.mixer.Sound("data/audio/bgm_main.ogg")
+BGM_GAME = pygame.mixer.Sound("data/audio/bgm_game.ogg")
+CLICK = pygame.mixer.Sound("data/audio/click.ogg")
+HOVER = pygame.mixer.Sound("data/audio/hover.ogg")
+GAMEOVER = pygame.mixer.Sound("data/audio/game-over.wav")
+
 # Window creation
 pygame.init()
 pygame.font.init()
@@ -55,6 +64,7 @@ def draw_food(surface, color, food_x, food_y, size):
 
 def pause():
     running = True
+    pygame.mixer.pause()
     while running:
 
         # screen.fill((GRAY))
@@ -66,6 +76,7 @@ def pause():
                 sys.exit()
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
+                    pygame.mixer.unpause()
                     running = False
 
         pygame.display.update()
@@ -76,7 +87,11 @@ def pause():
 
 def main_menu():
 
+    BGM_MAIN.set_volume(0.3)
+    BGM_MAIN.play(-1)
     clicked = False
+    start_hover = False
+    quit_hover = False
     while True:
         screen.fill(GRAY)
         text_write("Welcome to Snakes", RED, 20, 80, font_large)
@@ -87,18 +102,33 @@ def main_menu():
         mx, my = pygame.mouse.get_pos()
 
         # Check collision of Mouse and Button
+        # Start Button
         if button_start.collidepoint((mx, my)):
+            if start_hover == False:
+                HOVER.set_volume(10)
+                HOVER.play()
+                start_hover = True
             pygame.draw.rect(screen, (RED), button_start)
             if clicked:
                 game()
         else:
+            if start_hover == True:
+                start_hover = False
             pygame.draw.rect(screen, (DARKGRAY), button_start)
+
+        # Quit Button
         if button_quit.collidepoint((mx, my)):
+            if quit_hover == False:
+                HOVER.set_volume(10)
+                HOVER.play()
+                quit_hover = True
             pygame.draw.rect(screen, (RED), button_quit)
             if clicked:
                 pygame.quit()
                 sys.exit()
         else:
+            if quit_hover == True:
+                quit_hover = False
             pygame.draw.rect(screen, (DARKGRAY), button_quit)
 
         text_write("Start", GREEN, 92, 223)
@@ -120,7 +150,8 @@ def main_menu():
 
 def game():
     # Game Screen
-
+    pygame.mixer.stop()
+    BGM_GAME.play(-1)
     #  Game Specific Variables
     running = True
     score = 0
@@ -139,7 +170,7 @@ def game():
         score_bar_y_pos, screen_height + 1 - snake_size, 10)
     velocity_x = 0
     velocity_y = 0
-    init_velocity = 10
+    init_velocity = 5
     snake_pos_list = []
     snake_length = 1
     snake_direction = ""
@@ -207,7 +238,7 @@ def game():
             snake_y = screen_height - snake_size
             game_end(high_score)
             break
-        
+
         # Draw particles
         draw_snake(screen, DARKGRAY, snake_pos_list, snake_size)
         draw_food(screen, RED, food_x, food_y, snake_size)
@@ -248,8 +279,13 @@ def game():
 
 
 def game_end(high_score):
+    pygame.mixer.stop()
+    GAMEOVER.play()
     clicked = False
     running = True
+    restart_hover = False
+    menu_hover = False
+    quit_hover = False
     while running:
         screen.fill(GRAY)
         text_write('Game Over', RED, 120, 60, font_large)
@@ -266,30 +302,50 @@ def game_end(high_score):
 
         # Restart Button
         if button_restart.collidepoint((mx, my)):
+            if restart_hover == False:
+                HOVER.set_volume(10)
+                HOVER.play()
+                restart_hover = True
             pygame.draw.rect(screen, (RED), button_restart)
             if clicked:
                 running = False
                 game()
                 break
         else:
+            if restart_hover == True:
+                restart_hover = False
             pygame.draw.rect(screen, (DARKGRAY), button_restart)
 
         # Menu Bottom
         if button_menu.collidepoint((mx, my)):
+            if menu_hover == False:
+                HOVER.set_volume(10)
+                HOVER.play()
+                menu_hover = True
             pygame.draw.rect(screen, (RED), button_menu)
             if clicked:
                 running = False
+                pygame.mixer.stop()
+                BGM_MAIN.play(-1)
                 break
         else:
+            if menu_hover == True:
+                menu_hover = False
             pygame.draw.rect(screen, (DARKGRAY), button_menu)
 
         # Quit Button
         if button_quit.collidepoint((mx, my)):
+            if quit_hover == False:
+                HOVER.set_volume(10)
+                HOVER.play()
+                quit_hover = True
             pygame.draw.rect(screen, (RED), button_quit)
             if clicked:
                 pygame.quit()
                 sys.exit()
         else:
+            if quit_hover == True:
+                quit_hover = False
             pygame.draw.rect(screen, (DARKGRAY), button_quit)
 
         text_write("Restart", GREEN, 185, 155, font_small)
@@ -309,6 +365,7 @@ def game_end(high_score):
 
         pygame.display.update()
         clock.tick(fps)
+
 
 # Entry Point
 main_menu()
