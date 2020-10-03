@@ -126,7 +126,7 @@ def game():
     score = 0
     padding = 10
     score_bar_y_pos = 50
-    if(not os.path.exists("high_score.txt")):
+    if((not os.path.exists("high_score.txt")) == True) or (os.stat("high_score.txt").st_size == 0):
         with open("high_score.txt", 'w') as f:
             f.write("0")
     with open("high_score.txt", 'r') as f:
