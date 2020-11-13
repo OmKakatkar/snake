@@ -1,5 +1,9 @@
 # flake8: noqa = E501
 
+# TODO : Add sound for eating apple and pause.
+# TODO : Add a settings page with control for (Music On/Off(BGM and SFX separate)), Vary speed, snake color.
+# TODO : Change the look of apple and snake (optional).
+
 import random
 import os
 import sys
